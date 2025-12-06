@@ -117,18 +117,24 @@ const updateProfile = async (req, res) => {
 
         await userModel.findByIdAndUpdate(userId, { name, phone, address: JSON.parse(address), dob, gender })
 
-console.log("update start");
+            //console.log("update start");
         if (imageFile) {
 
             //Upload image to cloudinary
             const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
             const imageURL = imageUpload.secure_url
-            console.log("CLOUDINARY URL =", imageURL);
+            //console.log("CLOUDINARY URL =", imageURL);
             await userModel.findByIdAndUpdate(userId, { image: imageURL })
         }
 
-        res.json({ success: true, message: "Profile is Updated" })
-
+        //res.json({ success: true, message: "Profile is Updated" })
+        
+        const updatedUser = await userModel.findById(userId).lean();
+	res.json({
+  		  success: true,
+    		message: "Profile is Updated",
+    		userData: updatedUser
+		});
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message })
@@ -322,13 +328,9 @@ const orderMedicine = async (req, res) => {
 // API to get User Medicine booking
 const listMedicines = async (req, res) => {
     try {
-
         const userId = req.user?.userId;
-
         const medicines = await medicineModel.find({ userId })
-
         res.json({ success: true, medicines })
-
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message })
@@ -359,7 +361,7 @@ const bookNursing = async (req, res) => {
         // Save to DB 
         const nursingData = {
    		 userId,
-  		  userData,
+  		  userData: JSON.stringify(userData),
    		 serviceName,
    		 agreement,
  		 date: Date.now(),
@@ -381,9 +383,17 @@ const bookNursing = async (req, res) => {
     }
 }
 
-
 // API to get User Nurse booking
-
+const listNursing = async (req , res) => {
+	try {
+        	const userId = req.user?.userId;
+        	const nursing = await nursingModel.find({ userId })
+        	res.json({ success: true, nursing })
+    		} catch (error) {
+        		console.log(error);
+        		res.json({ success: false, message: error.message })
+    		}
+}
 
 // API to cancel Nurse booking
 
@@ -401,4 +411,4 @@ const bookNursing = async (req, res) => {
 
 
 
-export { registerUser, loginUser, getProfile, updateProfile, bookTests, listTests, cancelAppointment, orderMedicine, listMedicines, bookNursing }
+export { registerUser, loginUser, getProfile, updateProfile, bookTests, listTests, cancelAppointment, orderMedicine, listMedicines, bookNursing, listNursing }
