@@ -15,7 +15,6 @@ userRouter.post('/cancel-booking', authUser, cancelAppointment)
 userRouter.post('/order-medicine', authUser, upload.single('image'), orderMedicine)
 userRouter.get('/medicine-bookings', authUser, listMedicines)
 userRouter.post('/book-nurse', authUser, bookNursing)
-
 userRouter.get('/nurse-bookings', authUser, listNursing)
 
 export default userRouter

@@ -127,8 +127,14 @@ const updateProfile = async (req, res) => {
             await userModel.findByIdAndUpdate(userId, { image: imageURL })
         }
 
-        res.json({ success: true, message: "Profile is Updated" })
-
+        //res.json({ success: true, message: "Profile is Updated" })
+        
+        const updatedUser = await userModel.findById(userId).lean();
+	res.json({
+  		  success: true,
+    		message: "Profile is Updated",
+    		userData: updatedUser
+		});
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message })
